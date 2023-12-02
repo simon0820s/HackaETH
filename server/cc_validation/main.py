@@ -10,8 +10,8 @@ from class_p import Prediction
 
 app=Flask(__name__)
 
-CL_MODEL=tf.keras.models.load_model("CHL_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})
-CO_MODEL=tf.keras.models.load_model("COL_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})
+CL_MODEL=tf.keras.models.load_model("validation_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})
+CO_MODEL=tf.keras.models.load_model("validation_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})
 
 @app.route('/', methods=["POST"])
 def upload():
