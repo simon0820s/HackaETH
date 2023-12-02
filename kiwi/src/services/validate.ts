@@ -1,15 +1,14 @@
-export default async function validate () {
-  try {
-   const response = await fetch('http://localhost:2809')
-   if (!response.ok) {
-    throw new Error("Error at get response")
-   }
-   const data = await response.json()
-   console.log('Data: ', data)
-   return data;
-  } catch(error) {
-    console.log("Error at fetch validation api", error)
-    return null
-  }
+let URL = 'local'
+export default async function validate (img: string) {
+  const response = await fetch(URL, {
 
+    method: 'POST',
+
+    headers: {
+      'Content-Type': 'application/json'
+    },
+
+    body: JSON.stringify({"country": "CO", "image": img})
+  }).then(response => response.json())
+    .then(jsonResponse => console.log(jsonResponse))
 } 
