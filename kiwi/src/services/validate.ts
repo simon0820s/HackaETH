@@ -1,4 +1,4 @@
-let URL = 'local'
+let URL = 'https://localhost:2809'
 export default async function validate (img: string) {
   const response = await fetch(URL, {
 
