@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/card'
 import { useForm } from 'react-hook-form'
 import { Input } from './ui/input'
-import { useErc20, useFund } from '@/hooks'
+import { useErc20, useErc20Approve, useFund } from '@/hooks'
 import {
   Dialog,
   DialogContent,
@@ -28,24 +28,32 @@ import {
   DialogTitle,
   DialogTrigger
 } from './ui/dialog'
-import { lendingManagerAddress } from '@/constants'
+import { CeloCopAddress, lendingManagerAddress } from '@/constants'
+import { parseEther } from 'viem'
 
 function FundLoan () {
   const fundForm = useForm()
   const form = useForm()
+  const loanForm = useForm()
 
-  const { writeAsync: approve } = useErc20()
+  const { writeAsync: approve } = useErc20Approve()
 
   async function onSubmit (values) {
+    console.debug(lendingManagerAddress, values.value)
+console.debug(CeloCopAddress)
+
     await approve({
-      args: [lendingManagerAddress, values.value]
+      args: [lendingManagerAddress, parseEther(values.value)]
     })
   }
 
-  const { writeAsync: fund, write: isFundAvailable } = useFund()
+  const { writeAsync: fund, write: isFundAvailable } = useFund({
+    value: fundForm.watch('value')
+  })
 
-  function onFundSubmit (values) {}
-  const loanForm = useForm()
+  async function onFundSubmit () {
+    if (fund) await fund()
+  }
 
   function onLoanSubmit (values) {
     console.log(values)
@@ -112,57 +120,6 @@ function FundLoan () {
                     </FormItem>
                   )}
                 />
-
-                {isFundAvailable ? (
-                  <Button type='submit'>Solicitar prestamo</Button>
-                ) : (
-                  <Dialog>
-                    <DialogTrigger className='cursor-pointer' asChild>
-                      <Button type='button'>Solicitar prestamo</Button>
-                    </DialogTrigger>
-                    <DialogContent className='sm:max-w-[425px]'>
-                      <DialogHeader>
-                        <DialogTitle>Preaprueba la transacción</DialogTitle>
-                        <DialogDescription>
-                          Para poder realizar la transacción debes tener
-                          preaprobado un monto.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <Form {...form}>
-                        <form
-                          onSubmit={form.handleSubmit(onSubmit)}
-                          className='space-y-8'
-                        >
-                          <FormField
-                            control={form.control}
-                            name='value'
-                            rules={{
-                              required: 'Este campo es requerido',
-                              min: {
-                                value: 0,
-                                message: 'El monto debe ser mayor a: 0'
-                              }
-                            }}
-                            render={({ field }) => (
-                              <FormItem>
-                                <FormLabel>Valor</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type='number'
-                                    placeholder='0'
-                                    {...field}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                              </FormItem>
-                            )}
-                          />
-                          <Button type='submit'>Aprobar monto</Button>
-                        </form>
-                      </Form>
-                    </DialogContent>
-                  </Dialog>
-                )}
               </form>
             </Form>
           </CardContent>
@@ -202,7 +159,56 @@ function FundLoan () {
                     </FormItem>
                   )}
                 />
-                <Button type='submit'>Fondear</Button>
+                {isFundAvailable ? (
+                  <Button type='submit'>Solicitar prestamo</Button>
+                ) : (
+                  <Dialog>
+                    <DialogTrigger className='cursor-pointer' asChild>
+                      <Button type='button'>Fondear</Button>
+                    </DialogTrigger>
+                    <DialogContent className='sm:max-w-[425px]'>
+                      <DialogHeader>
+                        <DialogTitle>Preaprueba la transacción</DialogTitle>
+                        <DialogDescription>
+                          Para poder realizar la transacción debes tener
+                          preaprobado un monto.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...form}>
+                        <form
+                          onSubmit={form.handleSubmit(onSubmit)}
+                          className='space-y-8'
+                        >
+                          <FormField
+                            control={form.control}
+                            name='value'
+                            rules={{
+                              required: 'Este campo es requerido',
+                              min: {
+                                value: 0,
+                                message: 'El monto debe ser mayor a: 0'
+                              }
+                            }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Valor</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    placeholder='0'
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button type='submit'>Fondear</Button>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </form>
             </Form>
           </CardContent>

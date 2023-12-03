@@ -1,15 +1,16 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
 import { Button } from './ui/button'
 import AnimatedPrice from './AnimatedPrice'
 import { useFundValues } from '@/hooks'
 import { Skeleton } from './ui/skeleton'
+import { formatEther } from 'viem'
 
 function TotalFunds () {
-  //   const { data, isLoading } = useFundValues()
-  const isLoading = true
+  const { interest, initialValue, totalValue, isLoading } = useFundValues()
+  console.debug(interest, initialValue, totalValue, isLoading)
   return (
     <>
       {isLoading ? (
@@ -60,8 +61,19 @@ function TotalFunds () {
             </svg>
           </CardHeader>
           <CardContent>
-            <AnimatedPrice price={data | 0} />
-            <p className='text-xs text-muted-foreground'>+20.1% en total</p>
+            <AnimatedPrice
+              price={Number(
+                ((initialValue as bigint) + (interest as bigint)) / BigInt(1e18)
+              )}
+            />
+            <p className='text-xs text-muted-foreground'>
+              +
+              {BigInt(totalValue as bigint) == BigInt(0) ||
+              BigInt(interest as bigint) == BigInt(0)
+                ? 0
+                : (Number(initialValue) / Number(totalValue)) * 100}
+              % en total
+            </p>
           </CardContent>
           <CardFooter>
             <Button>Retirar fondos</Button>

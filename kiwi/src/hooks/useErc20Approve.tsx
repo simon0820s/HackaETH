@@ -8,15 +8,16 @@ import {
 import { CeloCopAddress, celoCopAbi } from '@/constants'
 import { toast } from '@/components/ui/use-toast'
 
-function useErc20 () {
+function useErc20Approve () {
   const CeloCop = useContractWrite({
     address: CeloCopAddress,
     abi: celoCopAbi,
+
     functionName: 'approve',
-    onSuccess (tx: Address) {
+    onSuccess (tx: any) {
       toast({
         title: 'Monto pre-aprobado con exito',
-        description: `Tx: ${tx.transactionHash}`
+        description: `Tx: ${tx.hash}`
       })
     },
     onError (error: Error) {
@@ -29,4 +30,4 @@ function useErc20 () {
   return CeloCop
 }
 
-export { useErc20 }
+export { useErc20Approve }
