@@ -7,10 +7,17 @@ import AnimatedPrice from './AnimatedPrice'
 import { useFundValues } from '@/hooks'
 import { Skeleton } from './ui/skeleton'
 import { formatEther } from 'viem'
+import useWithdraw from '@/hooks/useWithdraw'
 
 function TotalFunds () {
   const { interest, initialValue, totalValue, stakedAmount, isLoading } =
     useFundValues()
+  const { writeAsync: withdraw } = useWithdraw()
+
+  const handleOnWithdraw = async () => {
+    await withdraw()
+  }
+
   return (
     <>
       {isLoading ? (
@@ -71,7 +78,7 @@ function TotalFunds () {
               {BigInt(totalValue as bigint) == BigInt(0) ||
               BigInt(interest as bigint) == BigInt(0)
                 ? 0
-                : (Number(initialValue) / Number(totalValue)) * 100}
+                : formatEther(initialValue / totalValue) * 10 ** 17 * 100}
               % en total
             </p>
             <p className='text-xs text-accent'>
@@ -79,7 +86,7 @@ function TotalFunds () {
             </p>
           </CardContent>
           <CardFooter>
-            <Button>Retirar fondos</Button>
+            <Button onClick={handleOnWithdraw}>Retirar fondos</Button>
           </CardFooter>
         </Card>
       )}

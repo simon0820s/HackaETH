@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -36,7 +36,7 @@ import { Input } from './ui/input'
 import { useForm } from 'react-hook-form'
 import useLendHistory from '@/hooks/useLendHistory'
 import { Skeleton } from './ui/skeleton'
-import { formatEther } from 'viem'
+import { formatEther, parseEther } from 'viem'
 import { usePayLend } from '@/hooks'
 
 type Lend = {
@@ -52,14 +52,15 @@ const minValue = 800
 const maxValue = 5000
 
 function CurrentLoans () {
+  const [id, setId] = useState(null)
   const { writeAsync: payLend } = usePayLend()
 
   const form = useForm()
 
   async function onSubmit (values) {
-    console.debug({ values })
+    console.debug({ values }, id)
     await payLend({
-      args: [values.id, values.value]
+      args: [parseInt(id), parseEther(values.value)]
     })
   }
 
@@ -72,7 +73,7 @@ function CurrentLoans () {
   const lendingHistory: Lend[] = data as Lend[]
 
   function getTotalValue (data) {
-    if (data.length === 0) return 0
+    if (!data) return 0
     let currentValue = 0
     data.forEach(element => {
       const some = Number(element.netAmount)
@@ -80,6 +81,8 @@ function CurrentLoans () {
     })
     return currentValue
   }
+
+  console.debug({ lendingHistory })
 
   return (
     <Card className='w-full h-fit currentLoans'>
@@ -110,11 +113,11 @@ function CurrentLoans () {
               </TableRow>
             ) : (
               lendingHistory.map(currentLend => (
-                <TableRow key={formatEther(currentLend.id)}>
+                <TableRow key={Number(currentLend.id) }>
                   <Dialog>
                     <DialogTrigger className='cursor-pointer' asChild>
                       <TableCell className='font-medium text-blue-600 font-bold'>
-                        {formatEther(currentLend.id)}
+                        {Number(currentLend.id)}
                       </TableCell>
                     </DialogTrigger>
                     <DialogContent className='sm:max-w-[425px]'>
@@ -189,49 +192,12 @@ function CurrentLoans () {
                               </FormItem>
                             )}
                           />
-                          <FormField
-                            control={form.control}
-                            name='id'
-                            rules={{
-                              required: 'Este campo es requerido'
-                            }}
-                            render={({ field }) => (
-                              <FormItem className='hidden'>
-                                <FormLabel>Valor</FormLabel>
-                                <FormControl>
-                                  <Input
-                                    type='number'
-                                    placeholder='0'
-                                    value={formatEther(currentLend.id)}
-                                  />
-                                </FormControl>
-                                <FormMessage />
-                                <div className='w-full flex justify-end'>
-                                  <Button
-                                    type='button'
-                                    variant='ghost'
-                                    onClick={() => {
-                                      console.debug(
-                                        formatEther(
-                                          currentLend.netAmount /
-                                            currentLend.quotas
-                                        )
-                                      )
-                                      setMinValue(
-                                        formatEther(
-                                          currentLend.netAmount /
-                                            currentLend.quotas
-                                        )
-                                      )
-                                    }}
-                                  >
-                                    Pagar valor minimo
-                                  </Button>
-                                </div>
-                              </FormItem>
-                            )}
-                          />
-                          <Button type='submit'>Pagar cuota</Button>
+                          <Button
+                            onClick={() => setId(formatEther(currentLend.id))}
+                            type='submit'
+                          >
+                            Pagar cuota
+                          </Button>
                         </form>
                       </Form>
                     </DialogContent>
