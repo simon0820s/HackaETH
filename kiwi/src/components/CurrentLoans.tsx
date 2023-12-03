@@ -36,6 +36,7 @@ import {
 } from './ui/form'
 import { Input } from './ui/input'
 import { useForm } from 'react-hook-form'
+import useLendHistory from '@/hooks/useLendHistory'
 const invoices = [
   {
     id: 'INV001',
@@ -87,6 +88,8 @@ function CurrentLoans () {
   const setMinValue = minValue => {
     form.setValue('value', minValue, { shouldValidate: true })
   }
+
+  const { data, isLoading } = useLendHistory()
 
   return (
     <Card className='w-full h-fit currentLoans'>

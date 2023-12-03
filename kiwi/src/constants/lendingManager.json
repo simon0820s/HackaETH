@@ -64,7 +64,12 @@
   },
   {
     "inputs": [],
-    "name": "LendingManager_InvalidQuotes",
+    "name": "LendingManager_InvalidQuotas",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LendingManager_InvalidWithdraw",
     "type": "error"
   },
   {
@@ -75,6 +80,11 @@
   {
     "inputs": [],
     "name": "LendingManager_LimitExceeded",
+    "type": "error"
+  },
+  {
+    "inputs": [],
+    "name": "LendingManager_MinThresholdNotReached",
     "type": "error"
   },
   {
@@ -307,7 +317,7 @@
           },
           {
             "internalType": "uint256",
-            "name": "quotaPayed",
+            "name": "payedQuotas",
             "type": "uint256"
           },
           {
@@ -377,6 +387,25 @@
       }
     ],
     "name": "approvedLimit",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "address",
+        "name": "user",
+        "type": "address"
+      }
+    ],
+    "name": "calcEarnestInterest",
     "outputs": [
       {
         "internalType": "uint256",
@@ -579,7 +608,7 @@
       },
       {
         "internalType": "uint256",
-        "name": "quotaPayed",
+        "name": "payedQuotas",
         "type": "uint256"
       },
       {
