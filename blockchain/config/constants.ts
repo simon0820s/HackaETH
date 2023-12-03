@@ -9,6 +9,7 @@ export const SILVER_URI = "https://ipfs.filebase.io/ipfs/QmPcSGUQ1YUqibVu9hiE4uk
 export const BRONZE_URI = "https://ipfs.filebase.io/ipfs/QmUxVRqvwkB3s4QnAA5CaVYmfTPu8PZdBXtiKYAaq3hdFd"
 
 export const LUIS_ADDRESS = "0x5E15DBf75d3819Dd9DA31Fc159Ce5bc5f3751AB0"
+export const JUAN_ADDRESS = "0x3Bd208F4bC181439b0a6aF00C414110b5F9d2656"
 
 type Users = {
     [key: string]: {

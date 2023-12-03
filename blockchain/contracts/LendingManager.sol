@@ -38,7 +38,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     uint256 public MIN_QUOTAS = 3;
     uint256 public MAX_QUOTAS = 32;
 
-    uint256 public INTERESTS_RATE = 4 * 10 ** 17;
+    uint256 public INTERESTS_RATE = 4 * 10 ** 16;
 
     mapping(address => uint256) public stakedAmountPerUser;
     mapping(address => Lend[]) public lendsPerUser;
@@ -321,7 +321,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         return
             amount.mulDivDown(
                 ((SCALE /** 1 */ + INTERESTS_RATE) / SCALE) ** quotas,
-                1
+                SCALE
             );
     }
 }

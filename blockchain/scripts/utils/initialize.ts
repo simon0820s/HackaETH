@@ -2,26 +2,16 @@ import { Signer } from "ethers"
 import { ethers } from "hardhat";
 
 import { CeloCop, LendingManager } from "../../typechain-types";
-import { LUIS_ADDRESS, ONE_MILLION } from "../../config/constants";
+import { JUAN_ADDRESS, LUIS_ADDRESS, ONE_MILLION } from "../../config/constants";
 import { getWallet } from "./wallet";
 
 async function _initialize(cCop: CeloCop, lendingManager: LendingManager, users: Signer[]) {
-    async function batchApprove() {
-        for await (const user of users) {
-            await cCop.connect(user).approve(lendingManager.getAddress(), ONE_MILLION)
-        }
+    for (let index = 0; index < users.length; index++) {
+        const user = users[index];
+        await (await cCop.connect(user).approve(await lendingManager.getAddress(), ONE_MILLION)).wait()
+        await (await lendingManager.connect(user).deposit(ONE_MILLION)).wait()
     }
-
-    async function batchDeposit() {
-        for await (const user of users) {
-            await lendingManager.connect(user).deposit(ONE_MILLION)
-        }
-    }
-
-    await batchApprove()
-    await batchDeposit()
 }
-
 
 export async function initialize(cCop: CeloCop, lendingManager: LendingManager) {
     const lpA = await getWallet(process.env.USER_1_PRIVATE ?? '');
@@ -32,12 +22,13 @@ export async function initialize(cCop: CeloCop, lendingManager: LendingManager) 
     const APPROVED_AMOUNT = ethers.parseUnits("1000", await cCop.decimals())
 
     // LP Funding
-    await cCop.mint(lpA.address, LP_AMOUNT)
-    await cCop.mint(lpB.address, LP_AMOUNT)
-    await cCop.mint(lpC.address, LP_AMOUNT)
-    await cCop.mint(LUIS_ADDRESS, LP_AMOUNT)
+    await (await cCop.mint(lpA.address, LP_AMOUNT)).wait()
+    await (await cCop.mint(lpB.address, LP_AMOUNT)).wait()
+    await (await cCop.mint(lpC.address, LP_AMOUNT)).wait()
+    await (await cCop.mint(LUIS_ADDRESS, LP_AMOUNT)).wait()
+    await (await cCop.mint(JUAN_ADDRESS, LP_AMOUNT)).wait()
 
-    await lendingManager.validateUser(LUIS_ADDRESS, APPROVED_AMOUNT)
+    await (await lendingManager.validateUser(LUIS_ADDRESS, APPROVED_AMOUNT)).wait()
 
     await _initialize(cCop, lendingManager, [lpA, lpB, lpC])
 }
