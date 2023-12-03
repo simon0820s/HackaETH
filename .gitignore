@@ -12,3 +12,8 @@ blockchain/typechain-types
 # solidity-coverage files
 blockchain/coverage
 blockchain/coverage.json
+
+.env*
+.flaskenv*
+!.env.project
+!.env.vault
