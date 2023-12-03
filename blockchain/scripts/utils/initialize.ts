@@ -30,5 +30,11 @@ export async function initialize(cCop: CeloCop, lendingManager: LendingManager) 
 
     await (await lendingManager.validateUser(LUIS_ADDRESS, APPROVED_AMOUNT)).wait()
 
+    const compount = await lendingManager.calcCompoundInterest(
+        ethers.parseEther("1000"),
+        6n
+    )
+    console.log({ compount })
+
     await _initialize(cCop, lendingManager, [lpA, lpB, lpC])
 }

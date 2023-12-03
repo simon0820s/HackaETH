@@ -38,7 +38,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     uint256 public MIN_QUOTAS = 3;
     uint256 public MAX_QUOTAS = 32;
 
-    uint256 public INTERESTS_RATE = 4 * 10 ** 16;
+    uint256 public INTERESTS_RATE = 12 * 10 ** 15;
 
     mapping(address => uint256) public stakedAmountPerUser;
     mapping(address => Lend[]) public lendsPerUser;
@@ -134,6 +134,20 @@ contract LendingManager is KYCAdmin, RewardAdmin {
             );
     }
 
+    function calcCompoundInterest(
+        uint256 amount,
+        uint256 quotas
+    ) public view returns (uint256) {
+        uint256 SCALE_DOWN = 1e9;
+
+        return
+            FixedPointMathLib.mulDivDown(
+                amount,
+                ((SCALE /** 1 */ + INTERESTS_RATE) / SCALE_DOWN) ** quotas,
+                SCALE * SCALE_DOWN
+            ) / (SCALE * SCALE_DOWN);
+    }
+
     /*****************************************
      *               External                *
      *****************************************/
@@ -161,7 +175,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         if (approvedLimit[user] < amount) revert LendingManager_LimitExceeded();
 
         uint256 lendId = lendsPerUser[user].length;
-        uint256 netAmount = amount + _calcCompoundInterest(amount, quotas);
+        uint256 netAmount = calcCompoundInterest(amount, quotas);
         Lend memory newLend = Lend({
             id: lendId,
             payed: false,
@@ -309,17 +323,5 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     function _validateQuotas(uint256 amount) internal view {
         if (amount < MIN_QUOTAS || amount > MAX_QUOTAS)
             revert LendingManager_InvalidQuotas();
-    }
-
-    function _calcCompoundInterest(
-        uint256 amount,
-        uint256 quotas
-    ) internal view returns (uint256) {
-        return
-            FixedPointMathLib.mulDivDown(
-                amount,
-                ((SCALE /** 1 */ + INTERESTS_RATE)) ** quotas,
-                SCALE
-            );
     }
 }
