@@ -3,7 +3,7 @@ from flask import jsonify
 class Prediction:
     def __init__(self,model,result=None,score=None,b64=""):
         self._model=model
-        self._result=True if result>0.8 else False
+        self._result=True if result>0.5 else False
         self._score=round(score,3)
         self._b64=b64
 

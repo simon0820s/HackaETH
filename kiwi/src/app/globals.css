@@ -2,26 +2,62 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+    --background: 81 53% 7%;
+    --foreground: 83 52% 91%;
+
+    --card: 82, 53%, 70%, 5%;
+    --card-foreground: 83 52% 91%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 10% 3.9%;
+
+    --primary: 82 53% 70%;
+    --primary-foreground: 81 53% 7%;
+
+    --secondary: 118 53% 33%;
+    --secondary-foreground: 81 53% 7%;
+
+    --muted: 123 52% 53%;
+    --muted-foreground: 83 52% 91%;
+
+    --accent: 123 52% 53%;
+    --accent-foreground: 81 53% 7%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border:118 53% 33%;
+    --input: 123 52% 53%;
+    --ring: 123 52% 53%;
+
+    --radius: 0.5rem;
   }
 }
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  .dashboard {
+    display: grid;
+    grid-template-columns: 45% 55%;
+    grid-template-areas:
+      'chart currentLoans'
+      'fundLoan currentLoans';
+  }
+  .fundLoan {
+    grid-area: fundLoan;
+  }
+  .currentLoans {
+    grid-area: currentLoans;
+  }
+  .chart {
+    grid-area: chart;
+  }
 }
