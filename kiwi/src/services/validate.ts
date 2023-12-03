@@ -1,24 +1,23 @@
-const URL = 'http://localhost:2809';
+import axios from 'axios'
 
-export default async function validate(img: string): Promise<any> {
+const URL = 'http://localhost:2809'
+
+async function validate (img: string) {
   try {
-    const response = await fetch(URL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ "country": "CO", "image": img })
-    });
-
-    if (!response.ok) {
-      throw new Error('Error en la solicitud');
-    }
-
-    const jsonResponse = await response.json();
-    console.log(jsonResponse);
-    return jsonResponse;
+    const response = await axios.post(
+      URL,
+      JSON.stringify({ country: 'CO', image: img }),
+      {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      }
+    )
+    return response
   } catch (error) {
-    console.error('Error:', error);
-    throw error;
+    console.error('Error:', error)
+    throw error
   }
 }
+
+export { validate }

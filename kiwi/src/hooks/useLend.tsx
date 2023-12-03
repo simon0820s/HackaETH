@@ -8,7 +8,7 @@ function useLend () {
   const lend = useContractWrite({
     address: lendingManagerAddress,
     abi: lendingManagerAbi,
-    functionName: 'feed',
+    functionName: 'lend',
     onSuccess (tx: any) {
         toast({
           title: 'Prestamo realizado con exito',

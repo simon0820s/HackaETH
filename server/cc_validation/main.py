@@ -1,4 +1,5 @@
-from flask import Flask,request,jsonify
+from flask import Flask,request
+from flask_cors import CORS
 import tensorflow as tf
 import tensorflow_hub as hub
 import cv2
@@ -9,6 +10,7 @@ from class_p import Prediction
 
 
 app=Flask(__name__)
+CORS(app)
 
 CL_MODEL=tf.keras.models.load_model("validation_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})
 CO_MODEL=tf.keras.models.load_model("validation_model.hdf5",custom_objects={'KerasLayer':hub.KerasLayer})

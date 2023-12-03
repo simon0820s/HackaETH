@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/card'
 import { useForm } from 'react-hook-form'
 import { Input } from './ui/input'
-import { useErc20, useErc20Approve, useFund } from '@/hooks'
+import { useErc20Approve, useFund } from '@/hooks'
 import {
   Dialog,
   DialogContent,
@@ -30,6 +30,7 @@ import {
 } from './ui/dialog'
 import { CeloCopAddress, lendingManagerAddress } from '@/constants'
 import { parseEther } from 'viem'
+import { useLend } from '@/hooks/useLend'
 
 function FundLoan () {
   const fundForm = useForm()
@@ -40,7 +41,7 @@ function FundLoan () {
 
   async function onSubmit (values) {
     console.debug(lendingManagerAddress, values.value)
-console.debug(CeloCopAddress)
+    console.debug(CeloCopAddress)
 
     await approve({
       args: [lendingManagerAddress, parseEther(values.value)]
@@ -50,13 +51,16 @@ console.debug(CeloCopAddress)
   const { writeAsync: fund, write: isFundAvailable } = useFund({
     value: fundForm.watch('value')
   })
-
+  const { writeAsync: loan } = useLend()
   async function onFundSubmit () {
     if (fund) await fund()
   }
 
-  function onLoanSubmit (values) {
-    console.log(values)
+  async function onLoanSubmit (values) {
+    console.debug(values)
+    await loan({
+      args: [parseEther(values.value), values.months]
+    })
   }
 
   return (
@@ -75,13 +79,13 @@ console.debug(CeloCopAddress)
             </CardDescription>
           </CardHeader>
           <CardContent className='space-y-2'>
-            <Form {...fundForm}>
+            <Form {...loanForm}>
               <form
-                onSubmit={fundForm.handleSubmit(onLoanSubmit)}
+                onSubmit={loanForm.handleSubmit(onLoanSubmit)}
                 className='space-y-8'
               >
                 <FormField
-                  control={fundForm.control}
+                  control={loanForm.control}
                   name='value'
                   rules={{
                     required: 'Este campo es requerido',
@@ -101,7 +105,7 @@ console.debug(CeloCopAddress)
                   )}
                 />
                 <FormField
-                  control={fundForm.control}
+                  control={loanForm.control}
                   name='months'
                   rules={{
                     required: 'Este campo es requerido',
@@ -120,6 +124,7 @@ console.debug(CeloCopAddress)
                     </FormItem>
                   )}
                 />
+                <Button type='submit'>Prestar</Button>
               </form>
             </Form>
           </CardContent>
