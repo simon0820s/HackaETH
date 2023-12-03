@@ -15,6 +15,27 @@ import {
   TableHeader,
   TableRow
 } from './ui/table'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from './ui/dialog'
+import { Button } from './ui/button'
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from './ui/form'
+import { Input } from './ui/input'
+import { useForm } from 'react-hook-form'
 const invoices = [
   {
     id: 'INV001',
@@ -53,9 +74,22 @@ const invoices = [
   }
 ]
 
+const minValue = 800
+const maxValue = 5000
+
 function CurrentLoans () {
+  const form = useForm()
+
+  function onSubmit (values) {
+    console.log(values)
+  }
+
+  const setMinValue = minValue => {
+    form.setValue('value', minValue, { shouldValidate: true })
+  }
+
   return (
-    <Card className='w-full'>
+    <Card className='w-full h-fit currentLoans'>
       <CardHeader>
         <CardTitle>Historial</CardTitle>
         <CardDescription>
@@ -74,7 +108,66 @@ function CurrentLoans () {
           <TableBody>
             {invoices.map(invoice => (
               <TableRow key={invoice.id}>
-                <TableCell className='font-medium'>{invoice.id}</TableCell>
+                <Dialog>
+                  <DialogTrigger className='cursor-pointer' asChild>
+                    <TableCell className='font-medium text-blue-600 font-bold'>
+                      {invoice.id}
+                    </TableCell>
+                  </DialogTrigger>
+                  <DialogContent className='sm:max-w-[425px]'>
+                    <DialogHeader>
+                      <DialogTitle>Pagar cuota</DialogTitle>
+                      <DialogDescription>
+                        Ponte al día con tus pagos.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <Form {...form}>
+                      <form
+                        onSubmit={form.handleSubmit(onSubmit)}
+                        className='space-y-8'
+                      >
+                        <FormField
+                          control={form.control}
+                          name='value'
+                          rules={{
+                            required: 'Este campo es requerido',
+                            min: {
+                              value: minValue,
+                              message: `El monto debe ser mayor a: ${minValue}`
+                            },
+                            max: {
+                              value: maxValue,
+                              message: `El monto debe ser menor a: ${maxValue}`
+                            }
+                          }}
+                          render={({ field }) => (
+                            <FormItem>
+                              <FormLabel>Valor</FormLabel>
+                              <FormControl>
+                                <Input
+                                  type='number'
+                                  placeholder='0'
+                                  {...field}
+                                />
+                              </FormControl>
+                              <FormMessage />
+                              <div className='w-full flex justify-end'>
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  onClick={() => setMinValue(minValue)}
+                                >
+                                  Pagar valor minimo
+                                </Button>
+                              </div>
+                            </FormItem>
+                          )}
+                        />
+                        <Button type='submit'>Pagar cuota</Button>
+                      </form>
+                    </Form>
+                  </DialogContent>
+                </Dialog>
                 <TableCell className='text-right'>{invoice.value}</TableCell>
                 <TableCell className='text-right'>{invoice.months}</TableCell>
               </TableRow>

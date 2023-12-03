@@ -26,14 +26,14 @@ function FundLoan () {
   function onFundSubmit (values) {
     console.log(values)
   }
-  const loanForm = useForm({})
+  const loanForm = useForm()
 
   function onLoanSubmit (values) {
     console.log(values)
   }
 
   return (
-    <Tabs defaultValue='prestar' className='w-[400px]'>
+    <Tabs defaultValue='prestar' className='w-full fundLoan'>
       <TabsList className='grid w-full grid-cols-2'>
         <TabsTrigger value='prestar'>Presta</TabsTrigger>
         <TabsTrigger value='fondear'>Fondea</TabsTrigger>
