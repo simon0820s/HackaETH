@@ -6,8 +6,9 @@ function useLendHistory () {
   const lendHistory = useContractRead({
     address: lendingManagerAddress,
     abi: lendingManagerAbi,
-    functionName: 'LendsByUser',
-    args: [address]
+    functionName: 'lendsByUser',
+    args: [address],
+    watch: true
   })
   return lendHistory
 }

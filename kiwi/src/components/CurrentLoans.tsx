@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Card,
   CardContent,
@@ -19,7 +19,6 @@ import {
   Dialog,
   DialogContent,
   DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger
@@ -28,7 +27,6 @@ import { Button } from './ui/button'
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -37,52 +35,33 @@ import {
 import { Input } from './ui/input'
 import { useForm } from 'react-hook-form'
 import useLendHistory from '@/hooks/useLendHistory'
-const invoices = [
-  {
-    id: 'INV001',
-    value: '$250.00',
-    months: '3'
-  },
-  {
-    id: 'INV002',
-    value: '$150.00',
-    months: '3'
-  },
-  {
-    id: 'INV003',
-    value: '$350.00',
-    months: '3'
-  },
-  {
-    id: 'INV004',
-    value: '$450.00',
-    months: '3'
-  },
-  {
-    id: 'INV005',
-    value: '$550.00',
-    months: '3'
-  },
-  {
-    id: 'INV006',
-    value: '$200.00',
-    months: '3'
-  },
-  {
-    id: 'INV007',
-    value: '$300.00',
-    months: '3'
-  }
-]
+import { Skeleton } from './ui/skeleton'
+import { formatEther, parseEther } from 'viem'
+import { usePayLend } from '@/hooks'
+
+type Lend = {
+  id: bigint
+  amount: bigint
+  quotas: bigint
+  netAmount: bigint
+  payed: boolean
+  payedAmount: bigint
+}
 
 const minValue = 800
 const maxValue = 5000
 
 function CurrentLoans () {
+  const [id, setId] = useState(null)
+  const { writeAsync: payLend } = usePayLend()
+
   const form = useForm()
 
-  function onSubmit (values) {
-    console.log(values)
+  async function onSubmit (values) {
+    console.debug({ values }, id)
+    await payLend({
+      args: [parseInt(id), parseEther(values.value)]
+    })
   }
 
   const setMinValue = minValue => {
@@ -90,6 +69,20 @@ function CurrentLoans () {
   }
 
   const { data, isLoading } = useLendHistory()
+
+  const lendingHistory: Lend[] = data as Lend[]
+
+  function getTotalValue (data) {
+    if (!data) return 0
+    let currentValue = 0
+    data.forEach(element => {
+      const some = Number(element.netAmount)
+      currentValue = currentValue + some / 10 ** 18
+    })
+    return currentValue
+  }
+
+  console.debug({ lendingHistory })
 
   return (
     <Card className='w-full h-fit currentLoans'>
@@ -103,83 +96,131 @@ function CurrentLoans () {
         <Table className='w-full'>
           <TableHeader>
             <TableRow>
-              <TableHead className='text-center w-[100px]'>ID</TableHead>
-              <TableHead className='text-center'>Valor</TableHead>
-              <TableHead className='text-center'>Meses</TableHead>
+              <TableHead className=' w-[100px]'>ID</TableHead>
+              <TableHead>Valor inicial</TableHead>
+              <TableHead>Valor</TableHead>
+              <TableHead>Cuotas</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {invoices.map(invoice => (
-              <TableRow key={invoice.id}>
-                <Dialog>
-                  <DialogTrigger className='cursor-pointer' asChild>
-                    <TableCell className='font-medium text-blue-600 font-bold'>
-                      {invoice.id}
-                    </TableCell>
-                  </DialogTrigger>
-                  <DialogContent className='sm:max-w-[425px]'>
-                    <DialogHeader>
-                      <DialogTitle>Pagar cuota</DialogTitle>
-                      <DialogDescription>
-                        Ponte al día con tus pagos.
-                      </DialogDescription>
-                    </DialogHeader>
-                    <Form {...form}>
-                      <form
-                        onSubmit={form.handleSubmit(onSubmit)}
-                        className='space-y-8'
-                      >
-                        <FormField
-                          control={form.control}
-                          name='value'
-                          rules={{
-                            required: 'Este campo es requerido',
-                            min: {
-                              value: minValue,
-                              message: `El monto debe ser mayor a: ${minValue}`
-                            },
-                            max: {
-                              value: maxValue,
-                              message: `El monto debe ser menor a: ${maxValue}`
-                            }
-                          }}
-                          render={({ field }) => (
-                            <FormItem>
-                              <FormLabel>Valor</FormLabel>
-                              <FormControl>
-                                <Input
-                                  type='number'
-                                  placeholder='0'
-                                  {...field}
-                                />
-                              </FormControl>
-                              <FormMessage />
-                              <div className='w-full flex justify-end'>
-                                <Button
-                                  type='button'
-                                  variant='ghost'
-                                  onClick={() => setMinValue(minValue)}
-                                >
-                                  Pagar valor minimo
-                                </Button>
-                              </div>
-                            </FormItem>
-                          )}
-                        />
-                        <Button type='submit'>Pagar cuota</Button>
-                      </form>
-                    </Form>
-                  </DialogContent>
-                </Dialog>
-                <TableCell className='text-right'>{invoice.value}</TableCell>
-                <TableCell className='text-right'>{invoice.months}</TableCell>
+            {isLoading ? (
+              <Skeleton />
+            ) : !lendingHistory ? (
+              <TableRow>
+                <TableCell colSpan={4} className='text-center'>
+                  No tienes prestamos activos
+                </TableCell>
               </TableRow>
-            ))}
+            ) : (
+              lendingHistory.map(currentLend => (
+                <TableRow key={Number(currentLend.id) }>
+                  <Dialog>
+                    <DialogTrigger className='cursor-pointer' asChild>
+                      <TableCell className='font-medium text-blue-600 font-bold'>
+                        {Number(currentLend.id)}
+                      </TableCell>
+                    </DialogTrigger>
+                    <DialogContent className='sm:max-w-[425px]'>
+                      <DialogHeader>
+                        <DialogTitle>Pagar cuota</DialogTitle>
+                        <DialogDescription>
+                          Ponte al día con tus pagos.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...form}>
+                        <form
+                          onSubmit={form.handleSubmit(onSubmit)}
+                          className='space-y-8'
+                        >
+                          <FormField
+                            control={form.control}
+                            name='value'
+                            rules={{
+                              required: 'Este campo es requerido',
+                              min: {
+                                value: Math.floor(
+                                  formatEther(
+                                    currentLend.netAmount / currentLend.quotas
+                                  )
+                                ),
+                                message: `El monto debe ser mayor a: ${Math.floor(
+                                  formatEther(
+                                    currentLend.netAmount / currentLend.quotas
+                                  )
+                                )}`
+                              },
+                              max: {
+                                value: formatEther(currentLend.netAmount),
+                                message: `El monto debe ser menor a: ${formatEther(
+                                  currentLend.netAmount
+                                )}`
+                              }
+                            }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Valor</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    placeholder='0'
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                                <div className='w-full flex justify-end'>
+                                  <Button
+                                    type='button'
+                                    variant='ghost'
+                                    onClick={() => {
+                                      console.debug(
+                                        formatEther(
+                                          currentLend.netAmount /
+                                            currentLend.quotas
+                                        )
+                                      )
+                                      setMinValue(
+                                        formatEther(
+                                          currentLend.netAmount /
+                                            currentLend.quotas
+                                        )
+                                      )
+                                    }}
+                                  >
+                                    Pagar valor minimo
+                                  </Button>
+                                </div>
+                              </FormItem>
+                            )}
+                          />
+                          <Button
+                            onClick={() => setId(formatEther(currentLend.id))}
+                            type='submit'
+                          >
+                            Pagar cuota
+                          </Button>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                  <TableCell className='text-right'>
+                    {formatEther(currentLend.amount)}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    {formatEther(currentLend.netAmount)}
+                  </TableCell>
+                  <TableCell className='text-right'>
+                    {Number(currentLend.quotas as bigint)}
+                  </TableCell>
+                </TableRow>
+              ))
+            )}
           </TableBody>
           <TableFooter>
             <TableRow>
-              <TableCell colSpan={3}>Total</TableCell>
-              <TableCell className='text-right'>$2,500.00</TableCell>
+              <TableCell colSpan={3}>Deuda total</TableCell>
+              <TableCell className='text-right'>
+                $ {getTotalValue(lendingHistory)}
+              </TableCell>
             </TableRow>
           </TableFooter>
         </Table>

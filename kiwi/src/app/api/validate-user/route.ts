@@ -18,7 +18,8 @@ export async function POST (req: NextRequest) {
     wallet
   )
   if (address) {
-    await contract.validateUser(address, parseEther('10000'))
+    const response = await contract.validateUser(address, parseEther('10000'))
+    console.debug(response)
     return NextResponse.rewrite('/user')
   }
   return NextResponse.json({ error: 'No address provided' }, { status: 400 })
