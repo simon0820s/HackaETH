@@ -9,8 +9,8 @@ import { Skeleton } from './ui/skeleton'
 import { formatEther } from 'viem'
 
 function TotalFunds () {
-  const { interest, initialValue, totalValue, isLoading } = useFundValues()
-  console.debug(interest, initialValue, totalValue, isLoading)
+  const { interest, initialValue, totalValue, stakedAmount, isLoading } =
+    useFundValues()
   return (
     <>
       {isLoading ? (
@@ -73,6 +73,9 @@ function TotalFunds () {
                 ? 0
                 : (Number(initialValue) / Number(totalValue)) * 100}
               % en total
+            </p>
+            <p className='text-xs text-accent'>
+              En total hay ${formatEther(stakedAmount as bigint)} en fondeo
             </p>
           </CardContent>
           <CardFooter>
