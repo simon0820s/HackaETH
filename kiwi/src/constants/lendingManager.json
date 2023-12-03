@@ -261,6 +261,19 @@
     "type": "function"
   },
   {
+    "inputs": [],
+    "name": "INTERESTS_RATE",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
     "inputs": [
       {
         "internalType": "address",
@@ -284,7 +297,17 @@
           },
           {
             "internalType": "uint256",
+            "name": "netAmount",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
             "name": "quotas",
+            "type": "uint256"
+          },
+          {
+            "internalType": "uint256",
+            "name": "quotaPayed",
             "type": "uint256"
           },
           {
@@ -322,6 +345,19 @@
   {
     "inputs": [],
     "name": "MIN_QUOTAS",
+    "outputs": [
+      {
+        "internalType": "uint256",
+        "name": "",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "SCALE",
     "outputs": [
       {
         "internalType": "uint256",
@@ -514,7 +550,17 @@
       },
       {
         "internalType": "uint256",
+        "name": "netAmount",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
         "name": "quotas",
+        "type": "uint256"
+      },
+      {
+        "internalType": "uint256",
+        "name": "quotaPayed",
         "type": "uint256"
       },
       {
@@ -743,8 +789,13 @@
     "inputs": [
       {
         "internalType": "address",
-        "name": "userAddress",
+        "name": "_userAddress",
         "type": "address"
+      },
+      {
+        "internalType": "uint256",
+        "name": "_approvedLimit",
+        "type": "uint256"
       }
     ],
     "name": "validateUser",

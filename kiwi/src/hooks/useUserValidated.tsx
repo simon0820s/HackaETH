@@ -2,9 +2,9 @@
 import React, { useEffect, useState } from 'react'
 
 function useUserValidated () {
-  const [isValidate, setIsValidate] = useState(false)
+  const [isValidate, setIsValidate] = useState(true)
   useEffect(() => {
-    setIsValidate(false)
+    setIsValidate(true)
   }, [])
 
   return isValidate
