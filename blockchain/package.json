@@ -1,0 +1,14 @@
+{
+  "name": "hardhat-project",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^4.0.0",
+    "hardhat": "^2.19.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "4.9.0",
+    "dotenv": "^16.3.1",
+    "ethers": "^6.9.0",
+    "prettier": "^3.1.0",
+    "solmate": "^6.2.0"
+  }
+}
