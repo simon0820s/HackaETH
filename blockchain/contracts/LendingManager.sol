@@ -11,7 +11,7 @@ import {RewardAdmin} from "./RewardAdmin.sol";
 
 contract LendingManager is KYCAdmin, RewardAdmin {
     using SafeERC20 for IERC20;
-
+    using FixedPointMathLib for uint256;
     /*****************************************
      *             Custom Types              *
      *****************************************/
@@ -19,7 +19,9 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     struct Lend {
         uint256 id;
         uint256 amount;
+        uint256 netAmount;
         uint256 quotas;
+        uint256 quotaPayed;
         uint256 payedAmount;
         bool payed;
     }
@@ -28,14 +30,17 @@ contract LendingManager is KYCAdmin, RewardAdmin {
      *               Storage                 *
      *****************************************/
 
+    uint256 public constant SCALE = 1e18;
+
     uint256 public stakedBalance;
     uint256 public collectedInterests;
 
     uint256 public MIN_QUOTAS = 3;
     uint256 public MAX_QUOTAS = 32;
 
+    uint256 public INTERESTS_RATE = 4 * 10 ** uint256(1e17);
+
     mapping(address => uint256) public stakedAmountPerUser;
-    mapping(address => uint256) public approvedLimit;
     mapping(address => Lend[]) public lendsPerUser;
 
     IERC20 cUSD;
@@ -139,11 +144,15 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         uint256 lendId = lendsPerUser[user].length == 0
             ? 0
             : lendsPerUser[user].length - 1;
+
+        uint256 netAmount = _calcCompoundInterest(amount, quotas);
         Lend memory newLend = Lend({
             id: lendId,
             payed: false,
             amount: amount,
+            netAmount: netAmount,
             quotas: quotas,
+            quotaPayed: 0,
             payedAmount: 0
         });
         lendsPerUser[user].push(newLend);
@@ -232,5 +241,16 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     function _validateQuotas(uint256 amount) internal view {
         if (amount < MIN_QUOTAS || amount > MAX_QUOTAS)
             revert LendingManager_InvalidQuotes();
+    }
+
+    function _calcCompoundInterest(
+        uint256 amount,
+        uint256 quotas
+    ) internal view returns (uint256) {
+        return
+            amount.mulDivDown(
+                (SCALE /** 1 */ + INTERESTS_RATE) ** quotas,
+                SCALE ** quotas
+            );
     }
 }

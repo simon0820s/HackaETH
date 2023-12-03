@@ -22,6 +22,7 @@ contract KYCAdmin is AccessControl {
      *****************************************/
 
     mapping(address => bool) isUserValidated;
+    mapping(address => uint256) public approvedLimit;
     mapping(address => User) public users;
 
     /*****************************************
@@ -56,17 +57,19 @@ contract KYCAdmin is AccessControl {
     }
 
     function validateUser(
-        address userAddress
+        address _userAddress,
+        uint256 _approvedLimit
     )
         external
         onlyRole(DEFAULT_ADMIN_ROLE)
-        notZeroAddress(userAddress)
+        notZeroAddress(_userAddress)
         returns (bool)
     {
-        address user = userAddress;
+        address user = _userAddress;
 
         if (isUserValidated[user]) revert KYCAdmin_UserAlreadyValidated(user);
         isUserValidated[user] = true;
+        approvedLimit[user] = _approvedLimit;
 
         emit KYCAdmin_UserValidated(user);
 
