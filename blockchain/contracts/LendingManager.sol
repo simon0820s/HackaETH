@@ -249,8 +249,8 @@ contract LendingManager is KYCAdmin, RewardAdmin {
     ) internal view returns (uint256) {
         return
             amount.mulDivDown(
-                (SCALE /** 1 */ + INTERESTS_RATE) ** quotas,
-                SCALE ** quotas
+                ((SCALE /** 1 */ + INTERESTS_RATE) / SCALE) ** quotas,
+                SCALE
             );
     }
 }
