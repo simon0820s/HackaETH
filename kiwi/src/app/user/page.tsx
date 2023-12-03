@@ -10,6 +10,7 @@ import React from 'react'
 function Page () {
   const isValidate = useUserValidated()
   if (isValidate.isLoading) return null
+  console.debug(isValidate.data, isValidate.isFetched)
   if (!isValidate.data && isValidate.isFetched) redirect('/validation')
 
   return (

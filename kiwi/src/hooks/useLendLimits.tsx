@@ -1,16 +1,16 @@
-'use client'
 import { lendingManagerAbi, lendingManagerAddress } from '@/constants'
+import React from 'react'
 import { useAccount, useContractRead } from 'wagmi'
 
-function useUserValidated () {
+function useLendLimits () {
   const { address } = useAccount()
-  const userValidated = useContractRead({
+  const limits = useContractRead({
     address: lendingManagerAddress,
     abi: lendingManagerAbi,
-    functionName: 'isUserValidated',
+    functionName: 'approvedLimit',
     args: [address]
   })
-  return userValidated
+  return limits
 }
 
-export { useUserValidated }
+export { useLendLimits }
