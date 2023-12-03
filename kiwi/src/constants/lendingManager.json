@@ -3,8 +3,28 @@
     "inputs": [
       {
         "internalType": "address",
+        "name": "initialAdmin",
+        "type": "address"
+      },
+      {
+        "internalType": "address",
         "name": "_cUSD",
         "type": "address"
+      },
+      {
+        "internalType": "string",
+        "name": "goldUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "silverUri",
+        "type": "string"
+      },
+      {
+        "internalType": "string",
+        "name": "bronzeUri",
+        "type": "string"
       }
     ],
     "stateMutability": "nonpayable",
@@ -574,6 +594,66 @@
   {
     "inputs": [
       {
+        "internalType": "enum RewardAdmin.RewardType",
+        "name": "",
+        "type": "uint8"
+      }
+    ],
+    "name": "rewards",
+    "outputs": [
+      {
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      },
+      {
+        "internalType": "uint256",
+        "name": "threshold",
+        "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RewardAdmin.RewardType",
+        "name": "rewardType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "uint256",
+        "name": "threshold",
+        "type": "uint256"
+      }
+    ],
+    "name": "setThreshold",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
+        "internalType": "enum RewardAdmin.RewardType",
+        "name": "rewardType",
+        "type": "uint8"
+      },
+      {
+        "internalType": "string",
+        "name": "uri",
+        "type": "string"
+      }
+    ],
+    "name": "setUri",
+    "outputs": [],
+    "stateMutability": "nonpayable",
+    "type": "function"
+  },
+  {
+    "inputs": [
+      {
         "internalType": "address",
         "name": "",
         "type": "address"
@@ -598,6 +678,19 @@
         "internalType": "uint256",
         "name": "",
         "type": "uint256"
+      }
+    ],
+    "stateMutability": "view",
+    "type": "function"
+  },
+  {
+    "inputs": [],
+    "name": "stakerReward",
+    "outputs": [
+      {
+        "internalType": "contract StakerReward",
+        "name": "",
+        "type": "address"
       }
     ],
     "stateMutability": "view",

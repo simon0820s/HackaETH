@@ -1,17 +1,12 @@
-"use client";
-import React, { ChangeEvent, FormEvent, useState } from "react";
-import { useUserValidated } from "@/hooks";
-import { redirect } from "next/navigation";
-import validate from "@/services/validate";
-import { Redressed } from "next/font/google";
+'use client'
+import React, { ChangeEvent, FormEvent, useState } from 'react'
+import { validate } from '@/services/validate'
 
-function Page() {
-  const isValidate = useUserValidated();
-  const [image, setImage] = useState("");
-  if (!isValidate) redirect("/");
+function Page () {
+  const [image, setImage] = useState('')
 
   const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const selectedImage = event.target.files && event.target.files[0];
+    const selectedImage = event.target.files && event.target.files[0]
 
     if (selectedImage) {
       const reader = new FileReader()
@@ -23,13 +18,13 @@ function Page() {
       }
       reader.readAsDataURL(selectedImage)
     }
+  }
 
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    console.log(validate(image))
-  };
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const response = await validate(image)
+    console.debug(response)
+  }
 
   return (
     <section>
@@ -37,11 +32,11 @@ function Page() {
       <p>Page content</p>
 
       <form onSubmit={handleSubmit}>
-        <input type="file" accept="image/*" onChange={handleImageChange} />
-        <button type="submit">Send</button>
+        <input type='file' accept='image/*' onChange={handleImageChange} />
+        <button type='submit'>Send</button>
       </form>
     </section>
-  );
+  )
 }
 
-export default Page;
+export default Page

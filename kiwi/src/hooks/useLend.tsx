@@ -8,11 +8,11 @@ function useLend () {
   const lend = useContractWrite({
     address: lendingManagerAddress,
     abi: lendingManagerAbi,
-    functionName: 'feed',
-    onSuccess (tx: Address) {
+    functionName: 'lend',
+    onSuccess (tx: any) {
         toast({
           title: 'Prestamo realizado con exito',
-          description: `Tx: ${tx.transactionHash}`
+          description: `Tx: ${tx.hash}`
         })
       },
       onError (error: Error) {
