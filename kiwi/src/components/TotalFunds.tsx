@@ -1,6 +1,8 @@
+'use client'
 import { Button, Card } from 'flowbite-react'
 import React from 'react'
 import { CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
+import AnimatedPrice from './AnimatedPrice'
 
 function TotalFunds () {
   return (
@@ -21,7 +23,7 @@ function TotalFunds () {
         </svg>
       </CardHeader>
       <CardContent>
-        <div className='text-2xl text-green-500 font-bold'>$45,231.89</div>
+        <AnimatedPrice />
         <p className='text-xs text-muted-foreground'>+20.1% en total</p>
       </CardContent>
       <CardFooter>
