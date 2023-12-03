@@ -2,3 +2,4 @@ Flask == 3.0.0
 tensorflow == 2.15.0
 opencv-python == 4.8.1.78
 tensorflow-hub == 0.15.0
+Flask-Cors==4.0.0
