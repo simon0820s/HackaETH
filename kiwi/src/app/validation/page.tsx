@@ -1,43 +1,38 @@
 "use client";
-import React from "react";
+import React, { ChangeEvent, FormEvent, useState } from "react";
 import { useUserValidated } from "@/hooks";
 import { redirect } from "next/navigation";
 import validate from "@/services/validate";
-import { useForm } from "react-hook-form";
-import {
-  FormField,
-  FormItem,
-  FormLabel,
-  FormControl,
-  FormDescription,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
 
 function Page() {
-  const form = useForm();
-
   const isValidate = useUserValidated();
+  const [image, setImage] = useState<File | null>(null);
   if (!isValidate) redirect("/");
+
+  const handleImageChange = (event: ChangeEvent<HTMLInputElement>) => {
+
+    const selectedImage = event.target.files && event.target.files[0];
+    setImage(selectedImage)
+  };
+
+  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    console.log(typeof image)
+    if (image) {
+      const result = validate(image);
+      console.log(result);
+    }
+  };
 
   return (
     <section>
       <h1>Page</h1>
       <p>Page content</p>
-      <FormField
-        control={form.control}
-        name="username"
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Username</FormLabel>
-            <FormControl>
-              <Input placeholder="shadcn" {...field} />
-            </FormControl>
-            <FormDescription>This is your public display name.</FormDescription>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
+
+      <form onSubmit={handleSubmit}>
+        <input type="file" accept="image/*" onChange={handleImageChange} />
+        <button type="submit">Send</button>
+      </form>
     </section>
   );
 }
