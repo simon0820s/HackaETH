@@ -78,7 +78,13 @@ function TotalFunds () {
               {BigInt(totalValue as bigint) == BigInt(0) ||
               BigInt(interest as bigint) == BigInt(0)
                 ? 0
-                : formatEther(initialValue / totalValue) * 10 ** 17 * 100}
+                : parseFloat(
+                    formatEther(
+                      (initialValue as bigint) / (totalValue as bigint)
+                    )
+                  ) *
+                  10 ** 17 *
+                  100}
               % en total
             </p>
             <p className='text-xs text-accent'>

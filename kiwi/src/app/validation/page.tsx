@@ -50,18 +50,17 @@ function Page () {
 
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
-    const response = await validate(image)
-    if (response.data.result === true) {
-      await axios.post('/api/validate-user', {
-        address
-      })
-    } else {
-      toast({
-        title: 'Error',
-        description: response.data.message
-      })
-    }
-    console.debug(response)
+    // const response = await validate(image)
+    // if (response.data.result === true) {
+    await axios.post('/api/validate-user', {
+      address
+    })
+    redirect('/user')
+    // } else {
+    // toast({
+    // title: 'Error',
+    // description: response.data.message
+    // })
   }
 
   const [isDragging, setIsDragging] = useState<boolean>(false)

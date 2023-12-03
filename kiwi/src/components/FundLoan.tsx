@@ -40,7 +40,7 @@ function FundLoan () {
   const { data: limit } = useLendLimits()
   const { writeAsync: approve } = useErc20Approve()
 
-  async function onSubmit (values) {
+  async function onSubmit (values: any) {
     await approve({
       args: [lendingManagerAddress, parseEther(values.value)]
     })
@@ -54,7 +54,7 @@ function FundLoan () {
     if (fund) await fund()
   }
 
-  async function onLoanSubmit (values) {
+  async function onLoanSubmit (values: any) {
     console.debug(values)
     await loan({
       args: [parseEther(values.value), values.months]

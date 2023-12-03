@@ -11,7 +11,6 @@ export async function POST (req: NextRequest) {
   )
   console.debug({ privateKey })
   const wallet = new ethers.Wallet(privateKey as string, provider)
-  console.debug({ wallet })
   const contract = new Contract(
     lendingManagerAddress,
     lendingManagerAbi,

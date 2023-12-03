@@ -52,19 +52,19 @@ const minValue = 800
 const maxValue = 5000
 
 function CurrentLoans () {
-  const [id, setId] = useState(null)
+  const [id, setId] = useState<string | null>(null)
   const { writeAsync: payLend } = usePayLend()
 
   const form = useForm()
 
-  async function onSubmit (values) {
+  async function onSubmit (values: any) {
     console.debug({ values }, id)
     await payLend({
-      args: [parseInt(id), parseEther(values.value)]
+      args: [parseInt(id as string), parseEther(values.value)]
     })
   }
 
-  const setMinValue = minValue => {
+  const setMinValue = (minValue: any) => {
     form.setValue('value', minValue, { shouldValidate: true })
   }
 
@@ -72,10 +72,10 @@ function CurrentLoans () {
 
   const lendingHistory: Lend[] = data as Lend[]
 
-  function getTotalValue (data) {
+  function getTotalValue (data: any) {
     if (!data) return 0
     let currentValue = 0
-    data.forEach(element => {
+    data.forEach((element: any) => {
       const some = Number(element.netAmount)
       currentValue = currentValue + some / 10 ** 18
     })
@@ -113,7 +113,7 @@ function CurrentLoans () {
               </TableRow>
             ) : (
               lendingHistory.map(currentLend => (
-                <TableRow key={Number(currentLend.id) }>
+                <TableRow key={Number(currentLend.id)}>
                   <Dialog>
                     <DialogTrigger className='cursor-pointer' asChild>
                       <TableCell className='font-medium text-blue-600 font-bold'>
@@ -138,16 +138,16 @@ function CurrentLoans () {
                             rules={{
                               required: 'Este campo es requerido',
                               min: {
-                                value: Math.floor(
+                                value: 
                                   formatEther(
                                     currentLend.netAmount / currentLend.quotas
                                   )
-                                ),
-                                message: `El monto debe ser mayor a: ${Math.floor(
+                                ,
+                                message: `El monto debe ser mayor a: ${
                                   formatEther(
                                     currentLend.netAmount / currentLend.quotas
                                   )
-                                )}`
+                                }`
                               },
                               max: {
                                 value: formatEther(currentLend.netAmount),
