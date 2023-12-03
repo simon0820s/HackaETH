@@ -160,10 +160,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         _validateQuotas(quotas);
         if (approvedLimit[user] < amount) revert LendingManager_LimitExceeded();
 
-        uint256 lendId = lendsPerUser[user].length == 0
-            ? 0
-            : lendsPerUser[user].length - 1;
-
+        uint256 lendId = lendsPerUser[user].length;
         uint256 netAmount = amount + _calcCompoundInterest(amount, quotas);
         Lend memory newLend = Lend({
             id: lendId,
@@ -319,8 +316,9 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         uint256 quotas
     ) internal view returns (uint256) {
         return
-            amount.mulDivDown(
-                ((SCALE /** 1 */ + INTERESTS_RATE) / SCALE) ** quotas,
+            FixedPointMathLib.mulDivDown(
+                amount,
+                ((SCALE /** 1 */ + INTERESTS_RATE)) ** quotas,
                 SCALE
             );
     }
