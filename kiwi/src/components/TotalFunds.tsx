@@ -1,7 +1,8 @@
 'use client'
-import { Button, Card } from 'flowbite-react'
+
 import React from 'react'
-import { CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from './ui/card'
+import { Button } from './ui/button'
 import AnimatedPrice from './AnimatedPrice'
 
 function TotalFunds () {

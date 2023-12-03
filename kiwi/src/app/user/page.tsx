@@ -11,7 +11,7 @@ function Page () {
   const isValidate = useUserValidated()
 
   return (
-    <section className='p-10 flex flex-col gap-5 justify-center items-center'>
+    <section className='p-10 pt-20 flex flex-col gap-5 justify-center items-center'>
       <div className='w-[80vw] min-h-[80vh]  dashboard justify-stretch gap-10'>
         <FundLoan />
         <CurrentLoans />
