@@ -8,7 +8,7 @@ import { title } from 'process'
 export default function Home () {
   const draw = {
     hidden: { pathLength: 0, opacity: 0 },
-    visible: i => {
+    visible: (i: any) => {
       const delay = 1 + i * 0.5
       return {
         pathLength: 1,
