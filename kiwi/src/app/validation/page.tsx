@@ -15,6 +15,7 @@ import { useAccount } from 'wagmi'
 import { useValidateUser } from '@/hooks'
 import { parseEther } from 'viem'
 import { redirect } from 'next/navigation'
+import axios from 'axios'
 
 function Page () {
   const [image, setImage] = useState('')
@@ -23,11 +24,12 @@ function Page () {
   const handleImageChange = (
     event: ChangeEvent<HTMLInputElement> | React.DragEvent<HTMLLabelElement>
   ) => {
+    event.preventDefault()
+
     let selectedFile: File | null = null
 
     if ('dataTransfer' in event) {
       // Drag and Drop Event
-      event.preventDefault()
       selectedFile = event.dataTransfer.files[0]
     } else {
       // File Input Event
@@ -46,14 +48,12 @@ function Page () {
     }
   }
 
-  const { writeAsync: validateUser } = useValidateUser()
-
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
     const response = await validate(image)
     if (response.data.result === true) {
-      await validateUser({
-        args: [address, parseEther('10000')]
+      await axios.post('/api/validate-user', {
+        address
       })
     } else {
       toast({
