@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: SEE LICENSE IN LICENSE
+// SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
@@ -28,7 +28,7 @@ contract LendingManager is KYCAdmin {
      *****************************************/
 
     uint256 public stakedBalance;
-    uint256 public collectedIntersts;
+    uint256 public collectedInterests;
 
     uint256 public MIN_QUOTAS = 3;
     uint256 public MAX_QUOTAS = 32;
@@ -76,6 +76,30 @@ contract LendingManager is KYCAdmin {
     constructor(address _cUSD) {
         cUSD = IERC20(_cUSD);
     }
+
+    /*****************************************
+     *                Public                 *
+     *****************************************/
+
+    function getEarnedInsterests(
+        address user
+    ) public view returns (uint256 earnedInterests) {
+        uint256 stakedAmount = stakedAmountPerUser[user];
+        uint256 totalStaked = stakedBalance;
+        uint256 totalInterests = collectedInterests;
+
+        if (totalStaked == 0 || totalInterests == 0) return 0;
+
+        earnedInterests = FixedPointMathLib.mulDivDown(
+            totalInterests,
+            stakedAmount,
+            totalStaked
+        );
+    }
+
+    /*****************************************
+     *               External                *
+     *****************************************/
 
     function deposit(uint256 amount) external returns (bool) {
         address user = msg.sender;
@@ -149,6 +173,10 @@ contract LendingManager is KYCAdmin {
     function LendsByUser(address user) external view returns (Lend[] memory) {
         return lendsPerUser[user];
     }
+
+    /*****************************************
+     *               Internal                *
+     *****************************************/
 
     function _updatedLendState(
         Lend storage _lend
