@@ -21,7 +21,7 @@ contract KYCAdmin is AccessControl {
      *               Storage                 *
      *****************************************/
 
-    mapping(address => bool) isUserValidated;
+    mapping(address => bool) public isUserValidated;
     mapping(address => uint256) public approvedLimit;
     mapping(address => User) public users;
 

@@ -21,7 +21,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         uint256 amount;
         uint256 netAmount;
         uint256 quotas;
-        uint256 quotaPayed;
+        uint256 payedQuotas;
         uint256 payedAmount;
         bool payed;
     }
@@ -75,9 +75,11 @@ contract LendingManager is KYCAdmin, RewardAdmin {
      *****************************************/
 
     error LendingManager_LimitExceeded();
-    error LendingManager_InvalidQuotes();
+    error LendingManager_InvalidQuotas();
     error LendingManager_InvalidId();
     error LendingManager_LendAlreadyPayed();
+    error LendingManager_MinThresholdNotReached();
+    error LendingManager_InvalidWithdraw();
 
     constructor(
         address initialAdmin,
@@ -113,6 +115,23 @@ contract LendingManager is KYCAdmin, RewardAdmin {
             stakedAmount,
             totalStaked
         );
+    }
+
+    function calcEarnestInterest(address user) public view returns (uint256) {
+        uint256 stakedAmount = stakedAmountPerUser[user];
+        uint256 totalStaked = stakedBalance;
+        uint256 totalInterests = collectedInterests;
+
+        if (totalStaked == 0 || totalInterests == 0 || stakedAmount == 0) {
+            return 0;
+        }
+
+        return
+            FixedPointMathLib.mulDivDown(
+                totalInterests,
+                stakedAmount,
+                totalStaked * SCALE
+            );
     }
 
     /*****************************************
@@ -152,7 +171,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
             amount: amount,
             netAmount: netAmount,
             quotas: quotas,
-            quotaPayed: 0,
+            payedQuotas: 0,
             payedAmount: 0
         });
         lendsPerUser[user].push(newLend);
@@ -169,14 +188,18 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         address user = msg.sender;
         Lend storage _lend = _getLendById(user, id);
 
-        bool isOverpaying = _lend.amount < _lend.payedAmount + amount;
-        if (isOverpaying) {
-            uint256 fixedAmount = _lend.amount - _lend.payedAmount;
-            _takeTokensFromUser(user, fixedAmount);
-            _lend.payedAmount += fixedAmount;
+        _checkLendState(_lend);
+        uint256 minPayment = _getMinPayment(_lend);
+
+        if (amount < minPayment) revert LendingManager_MinThresholdNotReached();
+
+        uint256 remainingInterests = _lend.netAmount - _lend.payedAmount;
+        if (amount > remainingInterests) {
+            uint256 remainingPayment = amount - remainingInterests;
+            _payInterests(_lend, remainingInterests);
+            _payPrincipal(_lend, remainingPayment);
         } else {
-            _takeTokensFromUser(user, amount);
-            _lend.payedAmount += amount;
+            _payInterests(_lend, amount);
         }
 
         bool isPayed = _updatedLendState(_lend);
@@ -190,7 +213,30 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         return true;
     }
 
-    function withdraw() external returns (bool) {}
+    function withdraw() external returns (bool) {
+        address user = msg.sender;
+
+        uint256 userStakedAmount = stakedAmountPerUser[user];
+
+        if (userStakedAmount == 0) revert LendingManager_InvalidWithdraw();
+
+        uint256 earnedInterests = calcEarnestInterest(user);
+
+        stakedBalance -= userStakedAmount;
+        collectedInterests -= earnedInterests;
+
+        uint256 withdrawAmount = userStakedAmount + earnedInterests;
+        uint256 currentBalance = cUSD.balanceOf(address(this));
+
+        if (withdrawAmount > currentBalance)
+            revert LendingManager_InvalidWithdraw();
+
+        stakedAmountPerUser[user] = 0;
+
+        cUSD.transfer(user, withdrawAmount);
+
+        return true;
+    }
 
     function LendsByUser(address user) external view returns (Lend[] memory) {
         return lendsPerUser[user];
@@ -214,8 +260,23 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         isPayed = false;
     }
 
+    function _checkLendState(Lend storage _lend) internal view {
+        if (_lend.payed) revert LendingManager_LendAlreadyPayed();
+    }
+
     function _takeTokensFromUser(address user, uint256 amount) internal {
         cUSD.safeTransferFrom(user, address(this), amount);
+    }
+
+    function _getMinPayment(Lend memory _lend) internal pure returns (uint256) {
+        uint256 interest = _lend.netAmount - _lend.amount;
+        uint256 minPayment = FixedPointMathLib.mulDivDown(
+            interest,
+            SCALE,
+            _lend.quotas * SCALE
+        );
+
+        return minPayment;
     }
 
     function _increaseStakedBalance(uint256 amount) internal {
@@ -234,13 +295,23 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         return lendsPerUser[user][id];
     }
 
+    function _payInterests(Lend storage _lend, uint256 amount) internal {
+        _lend.payedAmount += amount;
+        collectedInterests += amount;
+    }
+
+    function _payPrincipal(Lend storage _lend, uint256 amount) internal {
+        _lend.payedAmount += amount;
+        _lend.payedQuotas += 1;
+    }
+
     function _increaseUserBalance(address user, uint256 amount) internal {
         stakedAmountPerUser[user] += amount;
     }
 
     function _validateQuotas(uint256 amount) internal view {
         if (amount < MIN_QUOTAS || amount > MAX_QUOTAS)
-            revert LendingManager_InvalidQuotes();
+            revert LendingManager_InvalidQuotas();
     }
 
     function _calcCompoundInterest(

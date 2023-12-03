@@ -8,6 +8,8 @@ export const GOLD_URI = "https://ipfs.filebase.io/ipfs/QmRHPpdEgvkgzV38TNWEAUgVz
 export const SILVER_URI = "https://ipfs.filebase.io/ipfs/QmPcSGUQ1YUqibVu9hiE4uk2HrGFhhLPzpN2gYGhqEQ7km"
 export const BRONZE_URI = "https://ipfs.filebase.io/ipfs/QmUxVRqvwkB3s4QnAA5CaVYmfTPu8PZdBXtiKYAaq3hdFd"
 
+export const LUIS_ADDRESS = "0x5E15DBf75d3819Dd9DA31Fc159Ce5bc5f3751AB0"
+
 type Users = {
     [key: string]: {
         publicKey: string | undefined,

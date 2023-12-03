@@ -2,7 +2,7 @@ import { Signer } from "ethers"
 import { ethers } from "hardhat";
 
 import { CeloCop, LendingManager } from "../../typechain-types";
-import { ONE_MILLION } from "../../config/constants";
+import { LUIS_ADDRESS, ONE_MILLION } from "../../config/constants";
 import { getWallet } from "./wallet";
 
 async function _initialize(cCop: CeloCop, lendingManager: LendingManager, users: Signer[]) {
@@ -29,11 +29,15 @@ export async function initialize(cCop: CeloCop, lendingManager: LendingManager) 
     const lpC = await getWallet(process.env.USER_3_PRIVATE ?? '');
 
     const LP_AMOUNT = ethers.parseUnits("100000", await cCop.decimals())
+    const APPROVED_AMOUNT = ethers.parseUnits("1000", await cCop.decimals())
 
     // LP Funding
     await cCop.mint(lpA.address, LP_AMOUNT)
     await cCop.mint(lpB.address, LP_AMOUNT)
     await cCop.mint(lpC.address, LP_AMOUNT)
+    await cCop.mint(LUIS_ADDRESS, LP_AMOUNT)
+
+    await lendingManager.validateUser(LUIS_ADDRESS, APPROVED_AMOUNT)
 
     await _initialize(cCop, lendingManager, [lpA, lpB, lpC])
 }
