@@ -51,8 +51,8 @@ contract KYCAdmin is AccessControl {
         _;
     }
 
-    constructor() {
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+    constructor(address initialAdmin) {
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
     }
 
     function validateUser(

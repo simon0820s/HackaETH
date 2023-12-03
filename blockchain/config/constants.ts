@@ -4,6 +4,10 @@ dotenv.config()
 export const cUSD_ADDRESS = "0x874069Fa1Eb16D44d622F2e0Ca25eeA172369bC1";
 export const ONE_MILLION = BigInt(100_000 * 10 ** 18)
 
+export const GOLD_URI = "https://ipfs.filebase.io/ipfs/QmRHPpdEgvkgzV38TNWEAUgVzjkyXg3EFcRascND7bYxFz"
+export const SILVER_URI = "https://ipfs.filebase.io/ipfs/QmPcSGUQ1YUqibVu9hiE4uk2HrGFhhLPzpN2gYGhqEQ7km"
+export const BRONZE_URI = "https://ipfs.filebase.io/ipfs/QmUxVRqvwkB3s4QnAA5CaVYmfTPu8PZdBXtiKYAaq3hdFd"
+
 type Users = {
     [key: string]: {
         publicKey: string | undefined,

@@ -7,8 +7,9 @@ import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "solmate/src/utils/FixedPointMathLib.sol";
 
 import {KYCAdmin} from "./KYCAdmin.sol";
+import {RewardAdmin} from "./RewardAdmin.sol";
 
-contract LendingManager is KYCAdmin {
+contract LendingManager is KYCAdmin, RewardAdmin {
     using SafeERC20 for IERC20;
 
     /*****************************************
@@ -73,8 +74,18 @@ contract LendingManager is KYCAdmin {
     error LendingManager_InvalidId();
     error LendingManager_LendAlreadyPayed();
 
-    constructor(address _cUSD) {
+    constructor(
+        address initialAdmin,
+        address _cUSD,
+        string memory goldUri,
+        string memory silverUri,
+        string memory bronzeUri
+    )
+        KYCAdmin(initialAdmin)
+        RewardAdmin(initialAdmin, goldUri, silverUri, bronzeUri)
+    {
         cUSD = IERC20(_cUSD);
+        _grantRole(DEFAULT_ADMIN_ROLE, initialAdmin);
     }
 
     /*****************************************
@@ -107,6 +118,7 @@ contract LendingManager is KYCAdmin {
         _takeTokensFromUser(user, amount);
         _increaseStakedBalance(amount);
         _increaseUserBalance(user, amount);
+        _mintReward(user, amount);
 
         emit LendingManager_Deposit(user, amount);
 
@@ -149,7 +161,6 @@ contract LendingManager is KYCAdmin {
         bool isOverpaying = _lend.amount < _lend.payedAmount + amount;
         if (isOverpaying) {
             uint256 fixedAmount = _lend.amount - _lend.payedAmount;
-
             _takeTokensFromUser(user, fixedAmount);
             _lend.payedAmount += fixedAmount;
         } else {
