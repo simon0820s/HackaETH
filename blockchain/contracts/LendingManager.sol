@@ -99,7 +99,9 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         uint256 totalStaked = stakedBalance;
         uint256 totalInterests = collectedInterests;
 
-        if (totalStaked == 0 || totalInterests == 0) return 0;
+        if (totalStaked == 0 || totalInterests == 0 || stakedAmount == 0) {
+            return 0;
+        }
 
         earnedInterests = FixedPointMathLib.mulDivDown(
             totalInterests,

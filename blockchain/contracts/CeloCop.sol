@@ -7,7 +7,7 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Permit.sol";
 
 contract CeloCop is ERC20, ERC20Burnable, Ownable, ERC20Permit {
-    constructor() ERC20("Celo COP", "cCOP") ERC20Permit("Fake USD") {}
+    constructor() ERC20("Celo COP", "cCOP") ERC20Permit("Celo Cop") {}
 
     function mint(address to, uint256 amount) public onlyOwner {
         _mint(to, amount);
