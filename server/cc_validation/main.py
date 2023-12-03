@@ -21,9 +21,7 @@ def upload():
     img_b64=data.get("image")
     country=data.get("country")
     result,name_model=predict(country,img_b64)
-
     prediction=Prediction(model=name_model,result=float(result),score=float(result),b64=img_b64)
-
     return prediction.to_jsonify()
 
 def prepare_img(function):

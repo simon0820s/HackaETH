@@ -9,7 +9,9 @@ import React from 'react'
 
 function Page () {
   const isValidate = useUserValidated()
-  if(!isValidate) redirect('/validation')
+  if (isValidate.isLoading) return null
+  console.debug(isValidate.data, isValidate.isFetched)
+  if (!isValidate.data && isValidate.isFetched) redirect('/validation')
 
   return (
     <section className='p-10 pt-20 flex flex-col gap-5 justify-center items-center'>

@@ -3,7 +3,7 @@
 import { createWeb3Modal, defaultWagmiConfig } from '@web3modal/wagmi/react'
 import { WagmiConfig } from 'wagmi'
 import { arbitrum, celo, celoAlfajores, mainnet } from 'viem/chains'
-import { ReactNode } from 'react'
+import { ReactNode, useEffect, useState } from 'react'
 
 const projectId = 'YOUR_PROJECT_ID'
 
@@ -21,5 +21,10 @@ const wagmiConfig = defaultWagmiConfig({ chains, projectId, metadata })
 createWeb3Modal({ wagmiConfig, projectId, chains })
 
 export function Providers ({ children }: { children: ReactNode }) {
-  return <WagmiConfig config={wagmiConfig}>{children}</WagmiConfig>
+  const [isMounted, setIsMounted] = useState(false)
+  useEffect(() => {
+    setIsMounted(true)
+  }, [])
+
+  return <WagmiConfig config={wagmiConfig}>{isMounted && children}</WagmiConfig>
 }

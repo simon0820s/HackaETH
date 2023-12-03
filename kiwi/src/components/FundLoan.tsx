@@ -2,6 +2,7 @@ import React from 'react'
 import {
   Form,
   FormControl,
+  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -13,13 +14,12 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle
 } from '@/components/ui/card'
 import { useForm } from 'react-hook-form'
 import { Input } from './ui/input'
-import { useErc20Approve, useFund } from '@/hooks'
+import { useErc20Approve, useFund, useLendLimits } from '@/hooks'
 import {
   Dialog,
   DialogContent,
@@ -37,12 +37,10 @@ function FundLoan () {
   const form = useForm()
   const loanForm = useForm()
 
+  const { data: limit } = useLendLimits()
   const { writeAsync: approve } = useErc20Approve()
 
   async function onSubmit (values) {
-    console.debug(lendingManagerAddress, values.value)
-    console.debug(CeloCopAddress)
-
     await approve({
       args: [lendingManagerAddress, parseEther(values.value)]
     })
@@ -92,6 +90,12 @@ function FundLoan () {
                     min: {
                       value: 0,
                       message: 'El monto debe ser mayor a 0'
+                    },
+                    max: {
+                      value: Number(limit) / 1e18,
+                      message: `El monto debe ser menor a: ${
+                        Number(limit) / 1e18
+                      }`
                     }
                   }}
                   render={({ field }) => (
@@ -100,6 +104,9 @@ function FundLoan () {
                       <FormControl>
                         <Input type='number' placeholder='0' {...field} />
                       </FormControl>
+                      <FormDescription>
+                        Maximo: {Number(limit) / 1e18} CELO
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -165,7 +172,7 @@ function FundLoan () {
                   )}
                 />
                 {isFundAvailable ? (
-                  <Button type='submit'>Solicitar prestamo</Button>
+                  <Button type='submit'>Fondear</Button>
                 ) : (
                   <Dialog>
                     <DialogTrigger className='cursor-pointer' asChild>
@@ -173,10 +180,10 @@ function FundLoan () {
                     </DialogTrigger>
                     <DialogContent className='sm:max-w-[425px]'>
                       <DialogHeader>
-                        <DialogTitle>Preaprueba la transacción</DialogTitle>
+                        <DialogTitle>Pre-aprueba la transacción</DialogTitle>
                         <DialogDescription>
                           Para poder realizar la transacción debes tener
-                          preaprobado un monto.
+                          pre-aprobado un monto.
                         </DialogDescription>
                       </DialogHeader>
                       <Form {...form}>

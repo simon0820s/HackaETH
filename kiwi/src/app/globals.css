@@ -82,7 +82,7 @@
     text-indent: -60px;
   }
 
-  .landing__container > .landing__container--button {
+  .landing__container--button {
     position: absolute;
     bottom: 10%;
     right: 10%;
