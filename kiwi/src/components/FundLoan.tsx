@@ -19,13 +19,32 @@ import {
 } from '@/components/ui/card'
 import { useForm } from 'react-hook-form'
 import { Input } from './ui/input'
+import { useErc20, useFund } from '@/hooks'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from './ui/dialog'
+import { lendingManagerAddress } from '@/constants'
 
 function FundLoan () {
   const fundForm = useForm()
+  const form = useForm()
 
-  function onFundSubmit (values) {
-    console.log(values)
+  const { writeAsync: approve } = useErc20()
+
+  async function onSubmit (values) {
+    await approve({
+      args: [lendingManagerAddress, values.value]
+    })
   }
+
+  const { writeAsync: fund, write: isFundAvailable } = useFund()
+
+  function onFundSubmit (values) {}
   const loanForm = useForm()
 
   function onLoanSubmit (values) {
@@ -93,7 +112,57 @@ function FundLoan () {
                     </FormItem>
                   )}
                 />
-                <Button type='submit'>Solicitar prestamo</Button>
+
+                {isFundAvailable ? (
+                  <Button type='submit'>Solicitar prestamo</Button>
+                ) : (
+                  <Dialog>
+                    <DialogTrigger className='cursor-pointer' asChild>
+                      <Button type='button'>Solicitar prestamo</Button>
+                    </DialogTrigger>
+                    <DialogContent className='sm:max-w-[425px]'>
+                      <DialogHeader>
+                        <DialogTitle>Preaprueba la transacción</DialogTitle>
+                        <DialogDescription>
+                          Para poder realizar la transacción debes tener
+                          preaprobado un monto.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <Form {...form}>
+                        <form
+                          onSubmit={form.handleSubmit(onSubmit)}
+                          className='space-y-8'
+                        >
+                          <FormField
+                            control={form.control}
+                            name='value'
+                            rules={{
+                              required: 'Este campo es requerido',
+                              min: {
+                                value: 0,
+                                message: 'El monto debe ser mayor a: 0'
+                              }
+                            }}
+                            render={({ field }) => (
+                              <FormItem>
+                                <FormLabel>Valor</FormLabel>
+                                <FormControl>
+                                  <Input
+                                    type='number'
+                                    placeholder='0'
+                                    {...field}
+                                  />
+                                </FormControl>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                          <Button type='submit'>Aprobar monto</Button>
+                        </form>
+                      </Form>
+                    </DialogContent>
+                  </Dialog>
+                )}
               </form>
             </Form>
           </CardContent>
