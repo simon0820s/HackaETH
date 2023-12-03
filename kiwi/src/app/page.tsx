@@ -2,6 +2,9 @@
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
+import { useAccount } from 'wagmi'
+import { toast } from '@/components/ui/use-toast'
+import { title } from 'process'
 export default function Home () {
   const draw = {
     hidden: { pathLength: 0, opacity: 0 },
@@ -18,6 +21,7 @@ export default function Home () {
       }
     }
   }
+  const { isConnected } = useAccount()
 
   return (
     <main className='flex min-h-screen flex-col items-center '>
@@ -58,9 +62,23 @@ export default function Home () {
             decentralizado de toda america latina
           </p>
         </div>
-        <Link href='/user' className='landing__container--button'>
-          <Button className='px-10  font-bold text-xl'>Empieza</Button>
-        </Link>
+        {isConnected ? (
+          <Link href='/user' className='landing__container--button'>
+            <Button className='px-10  font-bold text-xl'>Empieza</Button>
+          </Link>
+        ) : (
+          <Button
+            onClick={() =>
+              toast({
+                title: 'Mas despacio...',
+                description: 'Primero debes conectarte a tu wallet'
+              })
+            }
+            className='px-10 landing__container--button font-bold text-xl'
+          >
+            Empieza
+          </Button>
+        )}
       </div>
     </main>
   )

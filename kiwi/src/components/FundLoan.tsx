@@ -165,7 +165,7 @@ function FundLoan () {
                   )}
                 />
                 {isFundAvailable ? (
-                  <Button type='submit'>Solicitar prestamo</Button>
+                  <Button type='submit'>Fondear</Button>
                 ) : (
                   <Dialog>
                     <DialogTrigger className='cursor-pointer' asChild>
@@ -173,10 +173,10 @@ function FundLoan () {
                     </DialogTrigger>
                     <DialogContent className='sm:max-w-[425px]'>
                       <DialogHeader>
-                        <DialogTitle>Preaprueba la transacción</DialogTitle>
+                        <DialogTitle>Pre-aprueba la transacción</DialogTitle>
                         <DialogDescription>
                           Para poder realizar la transacción debes tener
-                          preaprobado un monto.
+                          pre-aprobado un monto.
                         </DialogDescription>
                       </DialogHeader>
                       <Form {...form}>
