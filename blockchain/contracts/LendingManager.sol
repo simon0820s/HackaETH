@@ -164,7 +164,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
             ? 0
             : lendsPerUser[user].length - 1;
 
-        uint256 netAmount = _calcCompoundInterest(amount, quotas);
+        uint256 netAmount = amount + _calcCompoundInterest(amount, quotas);
         Lend memory newLend = Lend({
             id: lendId,
             payed: false,
@@ -238,7 +238,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         return true;
     }
 
-    function LendsByUser(address user) external view returns (Lend[] memory) {
+    function lendsByUser(address user) external view returns (Lend[] memory) {
         return lendsPerUser[user];
     }
 
@@ -321,7 +321,7 @@ contract LendingManager is KYCAdmin, RewardAdmin {
         return
             amount.mulDivDown(
                 ((SCALE /** 1 */ + INTERESTS_RATE) / SCALE) ** quotas,
-                SCALE
+                1
             );
     }
 }
