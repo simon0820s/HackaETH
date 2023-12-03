@@ -4,19 +4,15 @@ import { useAccount, useContractRead } from 'wagmi'
 
 function useUserValidated () {
   const { address } = useAccount()
-  console.debug({
-    address: lendingManagerAddress,
-    abi: lendingManagerAbi,
-    functionName: 'isUserValidated',
-    args: [address]
-  })
+
   const userValidated = useContractRead({
     address: lendingManagerAddress,
     abi: lendingManagerAbi,
-    functionName: 'isUserValidated',
-    args: [address]
+    functionName: 'approvedLimit',
+    args: [address],
+    watch: true
   })
-  return userValidated
+  return { ...userValidated, data: (userValidated.data as bigint) > 0 }
 }
 
 export { useUserValidated }

@@ -16,6 +16,14 @@ import { useValidateUser } from '@/hooks'
 import { parseEther } from 'viem'
 import { redirect } from 'next/navigation'
 import axios from 'axios'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger
+} from '@/components/ui/dialog'
 
 function Page () {
   const [image, setImage] = useState('')
@@ -52,10 +60,14 @@ function Page () {
     event.preventDefault()
     // const response = await validate(image)
     // if (response.data.result === true) {
-    await axios.post('/api/validate-user', {
-      address
-    })
-    redirect('/user')
+    try {
+      await axios.post('/api/validate-user', {
+        address
+      })
+      redirect('/user')
+    } catch (e) {
+      console.error(e)
+    }
     // } else {
     // toast({
     // title: 'Error',
@@ -111,10 +123,21 @@ function Page () {
               id='imageATT'
               className='hidden'
             />
-
-            <Button variant='outline' type='submit'>
-              Enviar
-            </Button>
+            <Dialog>
+              <DialogTrigger className='cursor-pointer' asChild>
+                <Button variant='outline' type='submit'>
+                  Enviar
+                </Button>
+              </DialogTrigger>
+              <DialogContent className='sm:max-w-[425px]'>
+                <DialogHeader>
+                  <DialogTitle>Gracias</DialogTitle>
+                  <DialogDescription>
+                    En unos minutos estaras validado!
+                  </DialogDescription>
+                </DialogHeader>
+              </DialogContent>
+            </Dialog>
           </form>
         </CardContent>
       </Card>
