@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Lilita+One&display=swap');
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -28,7 +29,7 @@
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 0 0% 98%;
 
-    --border:118 53% 33%;
+    --border: 118 53% 33%;
     --input: 123 52% 53%;
     --ring: 123 52% 53%;
 
@@ -59,5 +60,31 @@
   }
   .chart {
     grid-area: chart;
+  }
+  .kiwi {
+    font-family: 'Lilita One', sans-serif;
+  }
+  .landing__container {
+    min-height: 100vh;
+    width: 100%;
+    position: relative;
+  }
+  .landing__container > .landing__container--title {
+    position: absolute;
+    top: 20%;
+    left: 10%;
+    font-weight: 700;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .landing__container > .landing__container--title > h1 {
+    text-indent: -60px;
+  }
+
+  .landing__container > .landing__container--button {
+    position: absolute;
+    bottom: 10%;
+    right: 10%;
   }
 }

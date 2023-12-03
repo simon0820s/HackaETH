@@ -12,7 +12,7 @@ function Nav () {
   return (
     <Navbar fluid className='bg-slate-400 bg-opacity-10 fixed w-full bg-transparent' rounded>
       <NavbarBrand as={Link} href='/'>
-        <span className='self-center text-white whitespace-nowrap text-xl font-semibold dark:text-white'>
+        <span className='self-center kiwi text-white whitespace-nowrap text-xl font-semibold dark:text-white'>
           Kiwi
         </span>
       </NavbarBrand>
